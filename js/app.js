@@ -16,7 +16,7 @@ import { buildToolbar, bindOptionsBar, GROUPS } from './ui/toolsui.js';
 import { buildDock } from './ui/panels.js';
 import { buildMenubar, buildTabs, buildStatus, buildHome } from './ui/shell.js';
 import { CMD, keymap } from './actions.js';
-import { bindDropAndPaste, saveToBrowser } from './io.js';
+import { bindDropAndPaste, saveToBrowser, autosaveSoon } from './io.js';
 import { DEFAULT_SWATCHES } from './color.js';
 import { FONTS, loadFont, rebuildShape } from './tools/vector.js';
 import { ICONS } from './icons.js';
@@ -36,7 +36,7 @@ App.addSwatch = hex => { if (!App.swatches.includes(hex)) { App.swatches.push(he
 // ── Documents ────────────────────────────────────────────────────────────
 App.addDoc = d => {
   App.docs.push(d);
-  d.on('dirty', () => App.emit('docs'));
+  d.on('dirty', () => { App.emit('docs'); if (d.dirty && App.docs.includes(d)) { d._edits = (d._edits || 0) + 1; autosaveSoon(d); } });
   d.on('history', () => App.emit('history'));
   d.on('restore', () => { App.live?.clear(); App.emit('layers'); });
   App.setDoc(d);
@@ -70,6 +70,7 @@ App.historyGoto = i => {
   if (App.transform?.active) App.transform.cancel();
   App.textEdit?.cancel();
   d.history.goto(i);
+  d.markDirty();
   if (d.view && !d._comp) d._comp = canvas(d.w, d.h);
   App.view.setDoc(d); invalidate();
 };
@@ -258,6 +259,7 @@ App.on('stagemenu', e => {
 });
 
 addEventListener('beforeunload', e => { if (App.docs.some(d => d.dirty)) { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('visibilitychange', () => { if (document.hidden) for (const d of App.docs) if (d.dirty) autosaveSoon(d, 0); });
 
 // ── Boot ─────────────────────────────────────────────────────────────────
 function boot() {

@@ -77,17 +77,28 @@ function thumbOf(d, max = 320) {
   const c = flattenDoc(d), k = Math.min(1, max / Math.max(d.w, d.h)), t = canvas(d.w * k, d.h * k), x = ctx2d(t);
   x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, t.width, t.height); return t.toDataURL('image/jpeg', .8);
 }
-export async function saveToBrowser(d = App.doc) {
+export async function saveToBrowser(d = App.doc, { quiet = false } = {}) {
   if (!d) return;
-  App.emit('busy', true);
+  if (!quiet) App.emit('busy', true);
   try {
+    const ver = d._edits;
     const data = await serializeDoc(d);
     const rec = { id: d.storeId ||= uid('F'), name: d.name, w: d.w, h: d.h, thumb: thumbOf(d), updated: Date.now(), data };
     await tx('readwrite', s => s.put(rec));
-    d.dirty = false; d.emit('dirty'); App.emit('recent'); App.emit('docs');
-    toast(`"${d.name}" disimpan di browser`, 'ok');
-  } catch (e) { console.error(e); toast('Gagal menyimpan: ' + e.message, 'err', 4000); }
-  App.emit('busy', false);
+    if (!quiet || d._edits === ver) { d.dirty = false; d.emit('dirty'); }
+    App.emit('recent'); App.emit('docs');
+    if (!quiet) toast(`"${d.name}" disimpan di browser`, 'ok');
+  } catch (e) { console.error(e); if (!quiet) toast('Gagal menyimpan: ' + e.message, 'err', 4000); }
+  if (!quiet) App.emit('busy', false);
+}
+// Autosave: every edit is written to the browser store shortly after it is made.
+export function autosaveSoon(d, ms = 2000) {
+  clearTimeout(d._asT);
+  d._asT = setTimeout(async () => {
+    if (d._asBusy) return autosaveSoon(d, 1000);
+    d._asBusy = true;
+    try { await saveToBrowser(d, { quiet: true }); } finally { d._asBusy = false; }
+  }, ms);
 }
 export async function openRecent(id) {
   const existing = App.docs.find(d => d.storeId === id); if (existing) return App.setDoc(existing);
