@@ -2,7 +2,7 @@
 
 Editor foto berbasis layer di browser dengan alur kerja ala Photoshop — tanpa build, vanilla ES modules.
 
-**Live:** https://liemyo.github.io/photoshop/
+**Live:** https://amatu-id.github.io/photoshop/
 
 - Layer, grup, layer mask, clipping mask, 27 blend mode, opacity & fill
 - Adjustment layer (Levels, Curves, Hue/Saturation, Color Balance, dll.) dan fill layer
