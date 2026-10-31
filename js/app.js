@@ -273,6 +273,7 @@ function boot() {
   App.on('temptool', () => { const t = App.activeTool(); App.view.stage.style.cursor = typeof t?.cursor === 'string' ? t.cursor : 'default'; });
   App.applyPrefs();
   requestAnimationFrame(() => document.body.classList.remove('booting'));
+  setTimeout(() => $('.splash')?.remove(), 700);
   const p = new URLSearchParams(location.search);
   if (p.has('sample')) App.openSample();
   if (p.has('new')) CMD.new.run();
