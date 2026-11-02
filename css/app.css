@@ -120,7 +120,7 @@ svg.defs { position: absolute; }
 
 /* Wallpaper behind glass */
 .wallpaper { position: fixed; inset: 0; background: var(--wall); overflow: hidden; z-index: 0; }
-.blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: var(--blob-op); animation: drift 26s ease-in-out infinite alternate; }
+.blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: var(--blob-op); animation: none; }
 .b1 { width: 44vw; height: 44vw; left: -8vw; top: -12vw; background: var(--blob1); }
 .b2 { width: 36vw; height: 36vw; right: -6vw; top: 10vh; background: var(--blob2); animation-delay: -6s; }
 .b3 { width: 40vw; height: 40vw; left: 30vw; bottom: -22vw; background: var(--blob3); animation-delay: -12s; }
@@ -135,7 +135,7 @@ svg.defs { position: absolute; }
   backdrop-filter: blur(var(--blur)) saturate(var(--sat));
   box-shadow: var(--glass-hi);
 }
-.liquid-ok .menu, .liquid-ok .dlg, .liquid-ok .flyout, .liquid-ok .pop { -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat)); backdrop-filter: url(#liquid) blur(20px) saturate(var(--sat)); }
+.liquid-ok .menu, .liquid-ok .dlg, .liquid-ok .flyout, .liquid-ok .pop { -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat)); backdrop-filter: blur(20px) saturate(var(--sat)); }
 .no-glass { --blur: 0px; }
 .no-glass .glass, .no-glass .menu, .no-glass .dlg, .no-glass .pop { background: var(--glass-solid) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 

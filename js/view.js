@@ -43,13 +43,15 @@ export class View {
     const r = this.stage.getBoundingClientRect();
     this.W = Math.max(1, r.width); this.H = Math.max(1, r.height);
     this.dpr = Math.max(1, window.devicePixelRatio || 1);
+    const same = this.cv.width === Math.round(this.W * this.dpr) && this.cv.height === Math.round(this.H * this.dpr);
+    if (same) { if (this.doc && !this.v.fitted) this.fit(); this.redraw(); return; }
     this.cv.width = Math.round(this.W * this.dpr); this.cv.height = Math.round(this.H * this.dpr);
     this.cv.style.width = this.W + 'px'; this.cv.style.height = this.H + 'px';
     for (const [c, w, hh] of [[this.rulerTop, this.W, RULER], [this.rulerLeft, RULER, this.H]]) {
       c.width = Math.round(w * this.dpr); c.height = Math.round(hh * this.dpr); c.style.width = w + 'px'; c.style.height = hh + 'px';
     }
     if (this.doc && !this.v.fitted) this.fit();
-    this.redraw();
+    this.paint();   // the resize cleared the canvases: repaint now, not a frame later (no empty flash)
   }
 
   setDoc(doc) {
